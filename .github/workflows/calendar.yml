@@ -26,6 +26,7 @@ jobs:
       - name: Commit calendar entries
         run: |
           python3 - <<'PY'
+          from hashlib import sha256
           import os
           import subprocess
           from datetime import date, datetime, timedelta
@@ -39,8 +40,9 @@ jobs:
           git('config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com')
           existing = set(git('log', '--format=%s').splitlines())
 
-          def record(label, day):
-              subject = f'{label}: {day}'
+          def record(label, day, *, entry=None):
+              detail = f' (entry {entry})' if entry is not None else ''
+              subject = f'{label}: {day}{detail}'
               if subject in existing:
                   return
               git('commit', '--allow-empty', '--author', author,
@@ -83,8 +85,14 @@ jobs:
           2026-11-10 2026-11-11 2026-11-12 2026-11-13 2026-11-14 2026-11-15 2026-11-16 2026-11-17
           2026-11-18 2026-11-19 2026-11-20 2026-11-21 2026-11-22
           '''.split()
+          # Keep the count stable across retries, with 2–4 entries more common.
+          counts = (1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 6, 7, 8)
           for day in historical_gaps:
               record('Calendar backfill', day)
+              date_hash = sha256(day.encode('ascii')).digest()
+              target = counts[int.from_bytes(date_hash[:4], 'big') % len(counts)]
+              for entry in range(2, target + 1):
+                  record('Calendar backfill', day, entry=entry)
 
           today = datetime.now(ZoneInfo('Asia/Kolkata')).date()
           start = date(2026, 11, 24)
