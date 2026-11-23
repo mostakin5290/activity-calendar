@@ -248,6 +248,42 @@ jobs:
                       unpushed = 0
                       sleep(6)
 
+          # Fill only the shortfalls still visible after the first correction.
+          remaining = {
+              '2026-03-30': 14,
+              '2026-03-31': 11,
+              '2026-04-01': 12,
+              '2026-04-02': 17,
+              '2026-04-03': 16,
+              '2026-04-07': 17,
+              '2026-04-15': 13,
+              '2026-04-30': 4,
+              '2026-05-01': 41,
+              '2026-05-11': 47,
+              '2026-05-12': 8,
+              '2026-05-14': 23,
+              '2026-05-15': 25,
+              '2026-05-18': 12,
+              '2026-05-22': 9,
+              '2026-05-25': 14,
+              '2026-05-26': 10,
+              '2026-05-27': 7,
+              '2026-06-15': 7,
+              '2026-06-17': 13,
+              '2026-06-19': 9,
+              '2026-06-22': 14,
+              '2026-06-24': 11,
+              '2026-06-25': 14,
+              '2026-06-26': 22,
+              '2026-07-06': 10,
+              '2026-07-14': 21,
+              '2026-07-15': 41,
+              '2026-07-16': 38,
+          }
+          for day, count in remaining.items():
+              for entry in range(1, count + 1):
+                  record('MOSTAKIN remaining shade', day, entry=entry)
+
           today = datetime.now(ZoneInfo('Asia/Kolkata')).date()
           start = date(2026, 11, 24)
           for offset in range((today - start).days + 1):
