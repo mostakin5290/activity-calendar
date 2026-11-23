@@ -1,6 +1,9 @@
 name: Activity calendar
 
 on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/calendar.yml]
   workflow_dispatch:
   schedule:
     - cron: '43 0 * * *'
